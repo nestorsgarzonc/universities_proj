@@ -1,16 +1,28 @@
-# universities_proj
+# Universities
 
-A new Flutter project.
+○ Home Listview
 
-## Getting Started
+![First time](https://github.com/nestorsgarzonc/universities_proj/blob/master/screenshots/Screenshot_2022-11-14-17-05-40-092_com.example.universities_proj.jpg?raw=true)
 
-This project is a starting point for a Flutter application.
 
-A few resources to get you started if this is your first Flutter project:
+○ Home GridView
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+![First time](https://github.com/nestorsgarzonc/universities_proj/blob/master/screenshots/Screenshot_2022-11-14-17-05-42-821_com.example.universities_proj.jpg?raw=true)
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+
+○ Home paginado
+
+![First time](https://github.com/nestorsgarzonc/universities_proj/blob/master/screenshots/Screenshot_2022-11-14-17-05-46-516_com.example.universities_proj.jpg?raw=true)
+
+
+○ Pantalla de detalle
+
+![First time](https://github.com/nestorsgarzonc/universities_proj/blob/master/screenshots/Screenshot_2022-11-14-17-05-16-507_com.example.universities_proj.jpg?raw=true)
+
+○ Pantalla de detalle con subida de imagen
+
+![First time](https://github.com/nestorsgarzonc/universities_proj/blob/master/screenshots/Screenshot_2022-11-14-17-05-30-169_com.example.universities_proj.jpg?raw=true)
+
+○ Pantalla de detalle con validacion de numero de estudiantes
+
+![First time](https://github.com/nestorsgarzonc/universities_proj/blob/master/screenshots/Screenshot_2022-11-14-17-05-33-917_com.example.universities_proj.jpg?raw=true)
