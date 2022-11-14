@@ -23,6 +23,26 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
   final scrollController = ScrollController();
 
   @override
+  void initState() {
+    super.initState();
+    scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    scrollController.removeListener(_onScroll);
+    super.dispose();
+  }
+
+  void _onScroll() {
+    final maxScroll = scrollController.position.maxScrollExtent;
+    final currentScroll = scrollController.position.pixels;
+    if (maxScroll - currentScroll <= 200) {
+      ref.read(universitiesProvider.notifier).getMoreUniversities();
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final universitiesState = ref.watch(universitiesProvider);
     return Scaffold(
@@ -61,17 +81,25 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
               },
               onLoading: () => const Center(child: CircularProgressIndicator()),
               onError: (e) => Center(child: Text(e.toString())),
-              onData: (data) => _mode == VisualizationMode.list
-                  ? _ListViewBody(
-                      universities: data,
-                      controller: scrollController,
-                      onTap: _handleOnSelectU,
-                    )
-                  : _GridViewBody(
-                      universities: data,
-                      controller: scrollController,
-                      onTap: _handleOnSelectU,
+              onData: (data) => ListView(
+                controller: scrollController,
+                children: [
+                  _mode == VisualizationMode.list
+                      ? _ListViewBody(
+                          universities: universitiesState.paginatedList,
+                          onTap: _handleOnSelectU,
+                        )
+                      : _GridViewBody(
+                          universities: universitiesState.paginatedList,
+                          onTap: _handleOnSelectU,
+                        ),
+                  if (universitiesState.isGettingMore)
+                    const Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: Center(child: CircularProgressIndicator()),
                     ),
+                ],
+              ),
             ),
           ),
         ],
@@ -90,17 +118,17 @@ class _GridViewBody extends StatelessWidget {
   const _GridViewBody({
     Key? key,
     required this.universities,
-    required this.controller,
     required this.onTap,
   }) : super(key: key);
 
   final List<UniversityModel> universities;
-  final ScrollController controller;
   final ValueChanged<UniversityModel> onTap;
 
   @override
   Widget build(BuildContext context) {
     return GridView.builder(
+      primary: false,
+      shrinkWrap: true,
       gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
         maxCrossAxisExtent: 200,
         childAspectRatio: 3 / 2,
@@ -108,7 +136,6 @@ class _GridViewBody extends StatelessWidget {
         mainAxisSpacing: 10,
       ),
       itemCount: universities.length,
-      controller: controller,
       padding: const EdgeInsets.all(16),
       itemBuilder: (context, index) {
         final university = universities[index];
@@ -140,19 +167,18 @@ class _ListViewBody extends StatelessWidget {
   const _ListViewBody({
     Key? key,
     required this.universities,
-    required this.controller,
     required this.onTap,
   }) : super(key: key);
 
   final List<UniversityModel> universities;
-  final ScrollController controller;
   final ValueChanged<UniversityModel> onTap;
 
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
       itemCount: universities.length,
-      controller: controller,
+      primary: false,
+      shrinkWrap: true,
       itemBuilder: (context, index) {
         final university = universities[index];
         return ListTile(

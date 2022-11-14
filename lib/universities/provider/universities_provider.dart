@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:equatable/equatable.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:universities_proj/core/wrappers/state_wrapper.dart';
@@ -24,7 +26,23 @@ class UniversitiesNotifier extends StateNotifier<UniversitiesState> {
     final universities = await universitiesRepository.getUniversities();
     state = universities.fold(
       (l) => state.copyWith(universities: StateAsync.error(l)),
-      (r) => state.copyWith(universities: StateAsync.success(r)),
+      (r) => state.copyWith(
+        universities: StateAsync.success(r),
+        paginatedList: r.take(20).toList(),
+      ),
     );
+  }
+
+  void getMoreUniversities() async {
+    if (state.isGettingMore) return;
+    if (state.universities.data?.length == state.paginatedList.length) return;
+    state = state.copyWith(isGettingMore: true);
+    await Future.delayed(const Duration(seconds: 2));
+    final paginatedList = state.paginatedList;
+    final universities = state.universities.data ?? [];
+    final nextToTake = min(universities.length, paginatedList.length + 20);
+    final newPaginatedList =
+        paginatedList + universities.skip(paginatedList.length).take(nextToTake).toList();
+    state = state.copyWith(paginatedList: newPaginatedList, isGettingMore: false);
   }
 }
