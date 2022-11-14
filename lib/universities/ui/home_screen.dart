@@ -1,11 +1,12 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import 'package:universities_proj/universities/models/university_model.dart';
 import 'package:universities_proj/universities/provider/universities_provider.dart';
 import 'package:universities_proj/universities/ui/university_detail_screen.dart';
+import 'package:universities_proj/widgets/loading_widget.dart';
+part './widgets/grid_view_body.dart';
+part './widgets/list_view_body.dart';
+part './widgets/view_mode.dart';
 
 enum VisualizationMode { list, grid }
 
@@ -50,25 +51,9 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              const SizedBox(width: 12),
-              const Expanded(child: Text('Selecciona el modo de visualización:')),
-              IconButton(
-                onPressed: () => setState(() => _mode = VisualizationMode.list),
-                icon: Icon(
-                  Icons.list,
-                  color: _mode == VisualizationMode.list ? Colors.blue[700] : Colors.grey,
-                ),
-              ),
-              IconButton(
-                onPressed: () => setState(() => _mode = VisualizationMode.grid),
-                icon: Icon(
-                  Icons.grid_view,
-                  color: _mode == VisualizationMode.grid ? Colors.blue[700] : Colors.grey,
-                ),
-              ),
-            ],
+          _ViewMode(
+            mode: _mode,
+            onSelect: (mode) => setState(() => _mode = mode),
           ),
           const Divider(),
           Expanded(
@@ -77,9 +62,9 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
                 WidgetsBinding.instance.addPostFrameCallback((_) {
                   ref.read(universitiesProvider.notifier).getUniversities();
                 });
-                return const Center(child: CircularProgressIndicator());
+                return const LoadingWidget();
               },
-              onLoading: () => const Center(child: CircularProgressIndicator()),
+              onLoading: () => const LoadingWidget(),
               onError: (e) => Center(child: Text(e.toString())),
               onData: (data) => ListView(
                 controller: scrollController,
@@ -94,10 +79,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
                           onTap: _handleOnSelectU,
                         ),
                   if (universitiesState.isGettingMore)
-                    const Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: Center(child: CircularProgressIndicator()),
-                    ),
+                    const Padding(padding: EdgeInsets.all(8.0), child: LoadingWidget()),
                 ],
               ),
             ),
@@ -114,83 +96,3 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
   }
 }
 
-class _GridViewBody extends StatelessWidget {
-  const _GridViewBody({
-    Key? key,
-    required this.universities,
-    required this.onTap,
-  }) : super(key: key);
-
-  final List<UniversityModel> universities;
-  final ValueChanged<UniversityModel> onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return GridView.builder(
-      primary: false,
-      shrinkWrap: true,
-      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-        maxCrossAxisExtent: 200,
-        childAspectRatio: 3 / 2,
-        crossAxisSpacing: 10,
-        mainAxisSpacing: 10,
-      ),
-      itemCount: universities.length,
-      padding: const EdgeInsets.all(16),
-      itemBuilder: (context, index) {
-        final university = universities[index];
-        return Material(
-          elevation: 2,
-          borderRadius: BorderRadius.circular(8),
-          child: InkWell(
-            onTap: () => onTap(university),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  university.name,
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 5),
-                Text('${university.country} - ${university.alphaTwoCode}'),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-}
-
-class _ListViewBody extends StatelessWidget {
-  const _ListViewBody({
-    Key? key,
-    required this.universities,
-    required this.onTap,
-  }) : super(key: key);
-
-  final List<UniversityModel> universities;
-  final ValueChanged<UniversityModel> onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView.builder(
-      itemCount: universities.length,
-      primary: false,
-      shrinkWrap: true,
-      itemBuilder: (context, index) {
-        final university = universities[index];
-        return ListTile(
-          onTap: () => onTap(university),
-          title: Text(university.name),
-          trailing: IconButton(
-            icon: const Icon(Icons.chevron_right_outlined),
-            onPressed: () => onTap(university),
-          ),
-          subtitle: Text(university.country),
-        );
-      },
-    );
-  }
-}

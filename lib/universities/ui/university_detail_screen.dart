@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:universities_proj/universities/models/university_model.dart';
+import 'package:universities_proj/universities/ui/widgets/item_tile.dart';
 
 class UniversityDetailScreen extends ConsumerStatefulWidget {
   const UniversityDetailScreen({required this.university, super.key});
@@ -100,9 +101,13 @@ class _UniversityDetailScreenState extends ConsumerState<UniversityDetailScreen>
               ],
             ),
           ),
-          ElevatedButton(
-            onPressed: _handleOnSubmit,
-            child: const Text('Enviar'),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(16),
+            child: ElevatedButton(
+              onPressed: _handleOnSubmit,
+              child: const Text('Enviar'),
+            ),
           ),
         ],
       ),
@@ -117,49 +122,5 @@ class _UniversityDetailScreenState extends ConsumerState<UniversityDetailScreen>
   void _handleOnAddPhoto(ImageSource source) async {
     final image = await ImagePicker().pickImage(source: source);
     if (image != null) setState(() => this.image = image);
-  }
-}
-
-class ItemTileUrl extends StatelessWidget {
-  const ItemTileUrl({super.key, required this.title, required this.pages});
-
-  final String title;
-  final List<String> pages;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(title, style: const TextStyle(fontWeight: FontWeight.w600)),
-          Column(
-            children: pages.map((e) => Text(e)).toList(),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class ItemTile extends StatelessWidget {
-  const ItemTile({super.key, required this.title, required this.subtitle});
-
-  final String title;
-  final String subtitle;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(title, style: const TextStyle(fontWeight: FontWeight.w600)),
-          Text(subtitle),
-        ],
-      ),
-    );
   }
 }
